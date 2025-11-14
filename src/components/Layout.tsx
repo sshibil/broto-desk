@@ -4,6 +4,7 @@ import { LogOut, Menu, X } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { NavLink } from "@/components/NavLink";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -37,7 +38,22 @@ export const Layout = ({ children }: LayoutProps) => {
             </Link>
 
             <div className="flex items-center gap-4">
-              <div className="hidden md:flex items-center gap-3">
+              <nav className="hidden md:flex items-center gap-3">
+                {profile?.role === "STUDENT" && (
+                  <NavLink to="/student">My Dashboard</NavLink>
+                )}
+                {profile?.role === "STAFF" && (
+                  <NavLink to="/staff">Staff Dashboard</NavLink>
+                )}
+                {profile?.role === "ADMIN" && (
+                  <>
+                    <NavLink to="/admin">Admin Dashboard</NavLink>
+                    <NavLink to="/admin/users">User Management</NavLink>
+                  </>
+                )}
+              </nav>
+
+              <div className="hidden md:flex items-center gap-3 border-l pl-4">
                 <span className="text-sm font-medium">{profile?.name}</span>
                 <span className="text-xs px-3 py-1 rounded-full bg-gradient-to-r from-primary to-accent text-white font-semibold shadow-sm">
                   {profile?.role}
@@ -67,12 +83,26 @@ export const Layout = ({ children }: LayoutProps) => {
           {mobileMenuOpen && (
             <div className="md:hidden border-t bg-card/95 backdrop-blur">
               <div className="container py-4 space-y-3">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between mb-3">
                   <span className="text-sm font-medium">{profile?.name}</span>
                   <span className="text-xs px-3 py-1 rounded-full bg-gradient-to-r from-primary to-accent text-white font-semibold">
                     {profile?.role}
                   </span>
                 </div>
+                <nav className="space-y-2">
+                  {profile?.role === "STUDENT" && (
+                    <NavLink to="/student" className="block">My Dashboard</NavLink>
+                  )}
+                  {profile?.role === "STAFF" && (
+                    <NavLink to="/staff" className="block">Staff Dashboard</NavLink>
+                  )}
+                  {profile?.role === "ADMIN" && (
+                    <>
+                      <NavLink to="/admin" className="block">Admin Dashboard</NavLink>
+                      <NavLink to="/admin/users" className="block">User Management</NavLink>
+                    </>
+                  )}
+                </nav>
                 <Button
                   variant="outline"
                   className="w-full hover-scale"
