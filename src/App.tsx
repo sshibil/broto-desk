@@ -11,6 +11,7 @@ import StudentDashboard from "./pages/StudentDashboard";
 import NewComplaint from "./pages/NewComplaint";
 import StaffDashboard from "./pages/StaffDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
+import AdminUserManagement from "./pages/AdminUserManagement";
 import ComplaintDetails from "./pages/ComplaintDetails";
 import NotFound from "./pages/NotFound";
 
@@ -33,6 +34,7 @@ const App = () => (
             <Route path="/staff" element={<StaffDashboard />} />
             <Route path="/staff/complaint/:id" element={<ComplaintDetails />} />
             <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/users" element={<AdminUserManagement />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
