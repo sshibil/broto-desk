@@ -17,6 +17,7 @@ interface UserWithRole {
   role: "STUDENT" | "STAFF" | "ADMIN";
   is_active: boolean;
   created_at: string;
+  complaint_count?: number;
 }
 
 export default function AdminUserManagement() {
@@ -42,11 +43,25 @@ export default function AdminUserManagement() {
 
       if (rolesError) throw rolesError;
 
+      // Fetch complaint counts for each user
+      const { data: complaints, error: complaintsError } = await supabase
+        .from("complaints")
+        .select("student_id");
+
+      if (complaintsError) throw complaintsError;
+
+      // Count complaints per user
+      const complaintCounts = complaints?.reduce((acc, complaint) => {
+        acc[complaint.student_id] = (acc[complaint.student_id] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>) || {};
+
       const usersWithRoles = profiles?.map(profile => {
         const userRole = roles?.find(r => r.user_id === profile.id);
         return {
           ...profile,
-          role: (userRole?.role || "STUDENT") as "STUDENT" | "STAFF" | "ADMIN"
+          role: (userRole?.role || "STUDENT") as "STUDENT" | "STAFF" | "ADMIN",
+          complaint_count: complaintCounts[profile.id] || 0
         };
       }) || [];
 
@@ -137,6 +152,7 @@ export default function AdminUserManagement() {
                       <TableHead>Email</TableHead>
                       <TableHead>Name</TableHead>
                       <TableHead>Current Role</TableHead>
+                      <TableHead>Complaints</TableHead>
                       <TableHead>Change Role</TableHead>
                       <TableHead>Status</TableHead>
                     </TableRow>
@@ -150,6 +166,11 @@ export default function AdminUserManagement() {
                           <Badge variant={getRoleBadgeVariant(user.role)} className="gap-1">
                             {getRoleIcon(user.role)}
                             {user.role}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline">
+                            {user.complaint_count || 0}
                           </Badge>
                         </TableCell>
                         <TableCell>
