@@ -24,6 +24,7 @@ const AdminDashboard = () => {
       return {
         totalComplaints: complaints.length,
         openComplaints: complaints.filter(c => !["RESOLVED", "CLOSED"].includes(c.status)).length,
+        resolvedComplaints: complaints.filter(c => ["RESOLVED", "CLOSED"].includes(c.status)).length,
         slaBreached: complaints.filter(c => c.is_sla_breached).length,
         totalUsers: users.length,
         students: users.filter(u => u.role === "STUDENT").length,
@@ -68,7 +69,7 @@ const AdminDashboard = () => {
               <CardContent>
                 <div className="text-2xl font-bold">{stats?.totalComplaints || 0}</div>
                 <p className="text-xs text-muted-foreground">
-                  {stats?.openComplaints} open
+                  {stats?.openComplaints} open, {stats?.resolvedComplaints} resolved
                 </p>
               </CardContent>
             </Card>

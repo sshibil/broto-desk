@@ -42,7 +42,7 @@ const StaffDashboard = () => {
       const total = data.length;
       const open = data.filter(c => !["RESOLVED", "CLOSED"].includes(c.status)).length;
       const slaBreached = data.filter(c => c.is_sla_breached && !["RESOLVED", "CLOSED"].includes(c.status)).length;
-      const resolved = data.filter(c => c.status === "RESOLVED").length;
+      const resolved = data.filter(c => ["RESOLVED", "CLOSED"].includes(c.status)).length;
 
       return { total, open, slaBreached, resolved };
     },

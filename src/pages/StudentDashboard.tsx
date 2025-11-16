@@ -45,7 +45,7 @@ const StudentDashboard = () => {
 
       const total = data.length;
       const open = data.filter(c => !["RESOLVED", "CLOSED"].includes(c.status)).length;
-      const resolved = data.filter(c => c.status === "RESOLVED").length;
+      const resolved = data.filter(c => ["RESOLVED", "CLOSED"].includes(c.status)).length;
 
       return { total, open, resolved };
     },
