@@ -7,7 +7,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Shield, User, Users } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Loader2, Shield, User, Users, UserPlus } from "lucide-react";
 import { toast } from "sonner";
 
 interface UserWithRole {
@@ -23,6 +27,14 @@ interface UserWithRole {
 export default function AdminUserManagement() {
   const [users, setUsers] = useState<UserWithRole[]>([]);
   const [loading, setLoading] = useState(true);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [creating, setCreating] = useState(false);
+  const [newUser, setNewUser] = useState({
+    email: "",
+    password: "",
+    name: "",
+    role: "STUDENT" as "STUDENT" | "STAFF" | "ADMIN"
+  });
 
   useEffect(() => {
     fetchUsers();
@@ -76,17 +88,25 @@ export default function AdminUserManagement() {
 
   const handleRoleChange = async (userId: string, newRole: "STUDENT" | "STAFF" | "ADMIN") => {
     try {
-      const { error } = await supabase
-        .from("user_roles")
-        .upsert({
-          user_id: userId,
-          role: newRole,
-          updated_at: new Date().toISOString()
-        }, {
-          onConflict: "user_id"
-        });
+      // Update both user_roles and profiles to keep them in sync
+      const [rolesResult, profilesResult] = await Promise.all([
+        supabase
+          .from("user_roles")
+          .upsert({
+            user_id: userId,
+            role: newRole,
+            updated_at: new Date().toISOString()
+          }, {
+            onConflict: "user_id"
+          }),
+        supabase
+          .from("profiles")
+          .update({ role: newRole })
+          .eq("id", userId)
+      ]);
 
-      if (error) throw error;
+      if (rolesResult.error) throw rolesResult.error;
+      if (profilesResult.error) throw profilesResult.error;
 
       setUsers(users.map(user => 
         user.id === userId ? { ...user, role: newRole } : user
@@ -121,6 +141,57 @@ export default function AdminUserManagement() {
     }
   };
 
+  const handleCreateUser = async () => {
+    if (!newUser.email || !newUser.password || !newUser.name) {
+      toast.error("Please fill in all fields");
+      return;
+    }
+
+    if (newUser.password.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
+
+    setCreating(true);
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        throw new Error("No active session");
+      }
+
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-user`,
+        {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${session.access_token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(newUser),
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "Failed to create user");
+      }
+
+      toast.success("User created successfully");
+      setDialogOpen(false);
+      setNewUser({ email: "", password: "", name: "", role: "STUDENT" });
+      fetchUsers();
+    } catch (error) {
+      console.error("Error creating user:", error);
+      const errorMessage = error instanceof Error ? error.message : "Failed to create user";
+      toast.error(errorMessage);
+    } finally {
+      setCreating(false);
+    }
+  };
+
   if (loading) {
     return (
       <Layout>
@@ -139,10 +210,92 @@ export default function AdminUserManagement() {
         <div className="container mx-auto py-8 px-4">
           <Card>
             <CardHeader>
-              <CardTitle className="text-3xl">User Management</CardTitle>
-              <CardDescription>
-                Manage user roles and permissions across the system
-              </CardDescription>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-3xl">User Management</CardTitle>
+                  <CardDescription>
+                    Manage user roles and permissions across the system
+                  </CardDescription>
+                </div>
+                <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button>
+                      <UserPlus className="mr-2 h-4 w-4" />
+                      Add User
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Create New User</DialogTitle>
+                      <DialogDescription>
+                        Add a new user to the system with their email, password, and role
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4 py-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="name">Full Name</Label>
+                        <Input
+                          id="name"
+                          placeholder="John Doe"
+                          value={newUser.name}
+                          onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="email">Email</Label>
+                        <Input
+                          id="email"
+                          type="email"
+                          placeholder="user@example.com"
+                          value={newUser.email}
+                          onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="password">Password</Label>
+                        <Input
+                          id="password"
+                          type="password"
+                          placeholder="Min. 6 characters"
+                          value={newUser.password}
+                          onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="role">Role</Label>
+                        <Select 
+                          value={newUser.role} 
+                          onValueChange={(value: "STUDENT" | "STAFF" | "ADMIN") => 
+                            setNewUser({ ...newUser, role: value })
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="STUDENT">Student</SelectItem>
+                            <SelectItem value="STAFF">Staff</SelectItem>
+                            <SelectItem value="ADMIN">Admin</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <Button 
+                        variant="outline" 
+                        onClick={() => setDialogOpen(false)}
+                        disabled={creating}
+                      >
+                        Cancel
+                      </Button>
+                      <Button onClick={handleCreateUser} disabled={creating}>
+                        {creating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        Create User
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              </div>
             </CardHeader>
             <CardContent>
               <div className="rounded-md border">
