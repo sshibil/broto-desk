@@ -25,6 +25,11 @@ export default {
           light: "hsl(var(--primary-light))",
           foreground: "hsl(var(--primary-foreground))",
         },
+        gradient: {
+          primary: "var(--gradient-primary)",
+          secondary: "var(--gradient-secondary)",
+          glass: "var(--gradient-glass)",
+        },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
