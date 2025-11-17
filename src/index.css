@@ -8,7 +8,7 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 220 25% 98%;
+    --background: 210 25% 98%;
     --foreground: 222 47% 11%;
 
     --card: 0 0% 100%;
@@ -17,9 +17,10 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
 
-    --primary: 217 91% 60%;
-    --primary-dark: 217 91% 50%;
-    --primary-light: 217 91% 70%;
+    /* Premium blue gradient theme */
+    --primary: 199 89% 48%;
+    --primary-dark: 221 83% 53%;
+    --primary-light: 187 85% 53%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 214 32% 91%;
@@ -28,7 +29,7 @@ All colors MUST be HSL.
     --muted: 214 32% 91%;
     --muted-foreground: 215 16% 47%;
 
-    --accent: 210 100% 55%;
+    --accent: 187 85% 53%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
@@ -40,33 +41,36 @@ All colors MUST be HSL.
     --warning: 38 92% 50%;
     --warning-foreground: 0 0% 100%;
 
-    --info: 217 91% 60%;
+    --info: 199 89% 48%;
     --info-foreground: 0 0% 100%;
 
     --border: 214 32% 91%;
     --input: 214 32% 91%;
-    --ring: 217 91% 60%;
+    --ring: 199 89% 48%;
 
-    --radius: 0.75rem;
+    --radius: 1.5rem;
 
     --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 222 47% 11%;
-    --sidebar-primary: 217 91% 60%;
+    --sidebar-primary: 199 89% 48%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 214 32% 91%;
     --sidebar-accent-foreground: 222 47% 11%;
     --sidebar-border: 214 32% 91%;
-    --sidebar-ring: 217 91% 60%;
+    --sidebar-ring: 199 89% 48%;
 
-    /* Gradient definitions */
-    --gradient-primary: linear-gradient(135deg, hsl(217 91% 60%) 0%, hsl(210 100% 55%) 100%);
-    --gradient-hover: linear-gradient(135deg, hsl(217 91% 50%) 0%, hsl(210 100% 45%) 100%);
+    /* Premium gradient definitions */
+    --gradient-primary: linear-gradient(135deg, hsl(199 89% 48%) 0%, hsl(187 85% 53%) 100%);
+    --gradient-secondary: linear-gradient(135deg, hsl(221 83% 53%) 0%, hsl(199 89% 48%) 100%);
+    --gradient-hover: linear-gradient(135deg, hsl(199 89% 38%) 0%, hsl(187 85% 43%) 100%);
+    --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%);
     
-    /* Shadow definitions */
+    /* Premium shadow definitions */
     --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    --shadow-glow: 0 0 20px rgba(59, 130, 246, 0.3);
+    --shadow-md: 0 4px 12px -2px rgba(14, 165, 233, 0.15);
+    --shadow-lg: 0 10px 24px -6px rgba(14, 165, 233, 0.2);
+    --shadow-xl: 0 20px 40px -12px rgba(14, 165, 233, 0.25);
+    --shadow-glow: 0 0 40px rgba(14, 165, 233, 0.4);
   }
 
   .dark {
