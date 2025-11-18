@@ -29,33 +29,36 @@ export const Layout = ({ children }: LayoutProps) => {
         <div className="bubble bubble-3"></div>
       </div>
       <div className="min-h-screen bg-background relative z-10">
-        <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm">
-          <div className="container flex h-16 items-center justify-between">
+        <header className="sticky top-0 z-50 w-full border-b bg-white/80 backdrop-blur-lg supports-[backdrop-filter]:bg-white/60 shadow-sm">
+          <div className="container flex h-20 items-center justify-between px-6">
             <Link to="/dashboard" className="flex items-center space-x-2 hover-scale">
-              <h1 className="text-xl font-bold bg-gradient-to-r from-primary via-accent to-primary-light bg-clip-text text-transparent">
+              <h1 className="text-2xl font-bold gradient-text">
                 BrotoDesk
               </h1>
             </Link>
 
-            <div className="flex items-center gap-4">
-              <nav className="hidden md:flex items-center gap-3">
+            <div className="flex items-center gap-6">
+              <nav className="hidden md:flex items-center gap-1">
                 {profile?.role === "STUDENT" && (
-                  <NavLink to="/student">My Dashboard</NavLink>
+                  <NavLink to="/student" className="px-4 py-2">My Dashboard</NavLink>
                 )}
                 {profile?.role === "STAFF" && (
-                  <NavLink to="/staff">Staff Dashboard</NavLink>
+                  <NavLink to="/staff" className="px-4 py-2">Staff Dashboard</NavLink>
                 )}
                 {profile?.role === "ADMIN" && (
                   <>
-                    <NavLink to="/admin">Admin Dashboard</NavLink>
-                    <NavLink to="/admin/users">User Management</NavLink>
+                    <NavLink to="/admin" className="px-4 py-2">Admin Dashboard</NavLink>
+                    <NavLink to="/admin/users" className="px-4 py-2">User Management</NavLink>
                   </>
                 )}
               </nav>
 
-              <div className="hidden md:flex items-center gap-3 border-l pl-4">
-                <span className="text-sm font-medium">{profile?.name}</span>
-                <span className="text-xs px-3 py-1 rounded-full bg-gradient-to-r from-primary to-accent text-white font-semibold shadow-sm">
+              <div className="hidden md:flex items-center gap-4 border-l border-border pl-6">
+                <div className="text-right">
+                  <div className="text-sm font-semibold text-foreground">{profile?.name}</div>
+                  <div className="text-xs text-muted-foreground">{profile?.email}</div>
+                </div>
+                <span className="text-xs px-4 py-2 rounded-full bg-gradient-to-r from-primary to-accent text-white font-bold shadow-md">
                   {profile?.role}
                 </span>
               </div>
@@ -64,7 +67,7 @@ export const Layout = ({ children }: LayoutProps) => {
                 variant="ghost"
                 size="icon"
                 onClick={handleSignOut}
-                className="hidden md:flex hover-scale"
+                className="hidden md:flex hover-scale rounded-xl"
               >
                 <LogOut className="h-5 w-5" />
               </Button>
@@ -72,43 +75,44 @@ export const Layout = ({ children }: LayoutProps) => {
               <Button
                 variant="ghost"
                 size="icon"
-                className="md:hidden hover-scale"
+                className="md:hidden hover-scale rounded-xl"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               >
-                {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+                {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
               </Button>
             </div>
           </div>
 
           {mobileMenuOpen && (
-            <div className="md:hidden border-t bg-card/95 backdrop-blur">
-              <div className="container py-4 space-y-3">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-sm font-medium">{profile?.name}</span>
-                  <span className="text-xs px-3 py-1 rounded-full bg-gradient-to-r from-primary to-accent text-white font-semibold">
+            <div className="md:hidden border-t bg-white/95 backdrop-blur-lg">
+              <div className="container py-6 space-y-4 px-6">
+                <div className="flex flex-col gap-2 pb-4 border-b">
+                  <span className="text-sm font-semibold text-foreground">{profile?.name}</span>
+                  <span className="text-xs text-muted-foreground">{profile?.email}</span>
+                  <span className="text-xs px-4 py-2 rounded-full bg-gradient-to-r from-primary to-accent text-white font-bold shadow-md w-fit">
                     {profile?.role}
                   </span>
                 </div>
                 <nav className="space-y-2">
                   {profile?.role === "STUDENT" && (
-                    <NavLink to="/student" className="block">My Dashboard</NavLink>
+                    <NavLink to="/student" className="block px-4 py-3 rounded-xl">My Dashboard</NavLink>
                   )}
                   {profile?.role === "STAFF" && (
-                    <NavLink to="/staff" className="block">Staff Dashboard</NavLink>
+                    <NavLink to="/staff" className="block px-4 py-3 rounded-xl">Staff Dashboard</NavLink>
                   )}
                   {profile?.role === "ADMIN" && (
                     <>
-                      <NavLink to="/admin" className="block">Admin Dashboard</NavLink>
-                      <NavLink to="/admin/users" className="block">User Management</NavLink>
+                      <NavLink to="/admin" className="block px-4 py-3 rounded-xl">Admin Dashboard</NavLink>
+                      <NavLink to="/admin/users" className="block px-4 py-3 rounded-xl">User Management</NavLink>
                     </>
                   )}
                 </nav>
                 <Button
                   variant="outline"
-                  className="w-full hover-scale"
                   onClick={handleSignOut}
+                  className="w-full mt-4 rounded-xl h-12"
                 >
-                  <LogOut className="mr-2 h-4 w-4" />
+                  <LogOut className="mr-2 h-5 w-5" />
                   Sign Out
                 </Button>
               </div>
@@ -116,9 +120,7 @@ export const Layout = ({ children }: LayoutProps) => {
           )}
         </header>
 
-        <main className="container py-6">
-          {children}
-        </main>
+        <main className="bg-background">{children}</main>
       </div>
     </>
   );
