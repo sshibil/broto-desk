@@ -2,10 +2,11 @@ import { Layout } from "@/components/Layout";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Users, Building2, Tag, Settings } from "lucide-react";
+import { Users, Building2, Tag, Settings, FileText, AlertCircle } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 const AdminDashboard = () => {
   const { data: stats } = useQuery({
@@ -39,136 +40,163 @@ const AdminDashboard = () => {
   return (
     <ProtectedRoute allowedRoles={["ADMIN"]}>
       <Layout>
-        <div className="space-y-6">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Admin Dashboard</h1>
-            <p className="text-muted-foreground">
-              System overview and configuration
+        <div className="space-y-8 p-6 md:p-10">
+          {/* Header Section */}
+          <div className="bg-gradient-to-br from-primary via-accent to-primary-light rounded-3xl p-8 md:p-12 text-white shadow-lg">
+            <h1 className="text-4xl md:text-5xl font-bold mb-3">Admin Dashboard</h1>
+            <p className="text-white/90 text-lg">
+              System overview and configuration management
             </p>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-                <Users className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stats?.totalUsers || 0}</div>
-                <p className="text-xs text-muted-foreground">
-                  {stats?.students} students, {stats?.staff} staff
-                </p>
-              </CardContent>
-            </Card>
+          {/* Main Stats Grid */}
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            <div className="stat-card">
+              <div className="flex items-center justify-between mb-4">
+                <Users className="h-10 w-10 text-primary" />
+                <div className="text-4xl font-bold text-foreground">{stats?.totalUsers || 0}</div>
+              </div>
+              <h3 className="text-lg font-semibold text-foreground">Total Users</h3>
+              <p className="text-sm text-muted-foreground mt-1">
+                {stats?.students} students, {stats?.staff} staff
+              </p>
+            </div>
 
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Complaints</CardTitle>
-                <Settings className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stats?.totalComplaints || 0}</div>
-                <p className="text-xs text-muted-foreground">
-                  {stats?.openComplaints} open, {stats?.resolvedComplaints} resolved
-                </p>
-              </CardContent>
-            </Card>
+            <div className="stat-card">
+              <div className="flex items-center justify-between mb-4">
+                <FileText className="h-10 w-10 text-accent" />
+                <div className="text-4xl font-bold text-foreground">{stats?.totalComplaints || 0}</div>
+              </div>
+              <h3 className="text-lg font-semibold text-foreground">Complaints</h3>
+              <p className="text-sm text-muted-foreground mt-1">
+                {stats?.openComplaints} open, {stats?.resolvedComplaints} resolved
+              </p>
+            </div>
 
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Departments</CardTitle>
-                <Building2 className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stats?.departments || 0}</div>
-              </CardContent>
-            </Card>
+            <div className="stat-card">
+              <div className="flex items-center justify-between mb-4">
+                <Building2 className="h-10 w-10 text-primary-light" />
+                <div className="text-4xl font-bold text-foreground">{stats?.departments || 0}</div>
+              </div>
+              <h3 className="text-lg font-semibold text-foreground">Departments</h3>
+              <p className="text-sm text-muted-foreground mt-1">Active departments</p>
+            </div>
 
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Categories</CardTitle>
-                <Tag className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stats?.categories || 0}</div>
-              </CardContent>
-            </Card>
+            <div className="stat-card">
+              <div className="flex items-center justify-between mb-4">
+                <Tag className="h-10 w-10 text-accent" />
+                <div className="text-4xl font-bold text-foreground">{stats?.categories || 0}</div>
+              </div>
+              <h3 className="text-lg font-semibold text-foreground">Categories</h3>
+              <p className="text-sm text-muted-foreground mt-1">Active categories</p>
+            </div>
           </div>
 
-          <Tabs defaultValue="overview" className="space-y-4">
-            <TabsList>
-              <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="config">Configuration</TabsTrigger>
-            </TabsList>
+          {/* Tabs Section */}
+          <Card className="rounded-3xl shadow-lg border-0">
+            <CardHeader className="p-6 md:p-8">
+              <CardTitle className="text-2xl font-bold">System Management</CardTitle>
+              <CardDescription className="text-base">
+                Configure and manage system settings
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="p-6 md:p-8 pt-0">
+              <Tabs defaultValue="overview" className="space-y-6">
+                <TabsList className="bg-muted/50 p-1 rounded-2xl">
+                  <TabsTrigger value="overview" className="rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                    Overview
+                  </TabsTrigger>
+                  <TabsTrigger value="config" className="rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                    Configuration
+                  </TabsTrigger>
+                </TabsList>
 
-            <TabsContent value="overview" className="space-y-4">
-              <div className="grid gap-4 md:grid-cols-2">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>System Health</CardTitle>
-                    <CardDescription>
-                      Current system status and metrics
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm">Open Complaints</span>
-                      <span className="text-sm font-bold">{stats?.openComplaints || 0}</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm">SLA Breached</span>
-                      <span className="text-sm font-bold text-destructive">{stats?.slaBreached || 0}</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm">Active Users</span>
-                      <span className="text-sm font-bold">{stats?.totalUsers || 0}</span>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Quick Actions</CardTitle>
-                    <CardDescription>
-                      Common administrative tasks
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-2">
-                    <Link to="/staff" className="block">
-                      <div className="p-3 rounded-lg border hover:bg-accent/50 transition-colors">
-                        <p className="text-sm font-medium">View All Complaints</p>
-                        <p className="text-xs text-muted-foreground">Manage complaint queue</p>
+                <TabsContent value="overview" className="space-y-6">
+                  <div className="grid gap-6 md:grid-cols-2">
+                    {/* System Health */}
+                    <div className="p-6 rounded-2xl border border-border bg-card">
+                      <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                        <AlertCircle className="h-5 w-5 text-primary" />
+                        System Health
+                      </h3>
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm text-muted-foreground">SLA Breaches</span>
+                          <span className="text-lg font-bold text-destructive">{stats?.slaBreached || 0}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm text-muted-foreground">Open Tickets</span>
+                          <span className="text-lg font-bold text-warning">{stats?.openComplaints || 0}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm text-muted-foreground">Resolution Rate</span>
+                          <span className="text-lg font-bold text-success">
+                            {stats?.totalComplaints ? Math.round((stats.resolvedComplaints / stats.totalComplaints) * 100) : 0}%
+                          </span>
+                        </div>
                       </div>
-                    </Link>
-                    <div className="p-3 rounded-lg border opacity-50">
-                      <p className="text-sm font-medium">Manage Users</p>
-                      <p className="text-xs text-muted-foreground">Coming soon</p>
                     </div>
-                    <div className="p-3 rounded-lg border opacity-50">
-                      <p className="text-sm font-medium">System Reports</p>
-                      <p className="text-xs text-muted-foreground">Coming soon</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </TabsContent>
 
-            <TabsContent value="config" className="space-y-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>System Configuration</CardTitle>
-                  <CardDescription>
-                    Manage departments, categories, and SLA policies
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    Configuration interface coming soon. You can currently manage these through the backend.
-                  </p>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
+                    {/* Quick Actions */}
+                    <div className="p-6 rounded-2xl border border-border bg-card">
+                      <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                        <Settings className="h-5 w-5 text-primary" />
+                        Quick Actions
+                      </h3>
+                      <div className="space-y-3">
+                        <Button asChild variant="outline" className="w-full justify-start rounded-xl h-12">
+                          <Link to="/admin/users">
+                            <Users className="h-4 w-4 mr-2" />
+                            Manage Users
+                          </Link>
+                        </Button>
+                        <Button asChild variant="outline" className="w-full justify-start rounded-xl h-12">
+                          <Link to="/staff">
+                            <FileText className="h-4 w-4 mr-2" />
+                            View All Complaints
+                          </Link>
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* User Distribution */}
+                  <div className="p-6 rounded-2xl border border-border bg-card">
+                    <h3 className="text-lg font-semibold mb-4">User Distribution</h3>
+                    <div className="grid gap-4 md:grid-cols-3">
+                      <div className="text-center p-4 rounded-xl bg-primary/5">
+                        <div className="text-3xl font-bold text-primary mb-1">{stats?.students || 0}</div>
+                        <div className="text-sm text-muted-foreground">Students</div>
+                      </div>
+                      <div className="text-center p-4 rounded-xl bg-accent/5">
+                        <div className="text-3xl font-bold text-accent mb-1">{stats?.staff || 0}</div>
+                        <div className="text-sm text-muted-foreground">Staff</div>
+                      </div>
+                      <div className="text-center p-4 rounded-xl bg-primary-light/5">
+                        <div className="text-3xl font-bold text-primary-light mb-1">{stats?.admins || 0}</div>
+                        <div className="text-sm text-muted-foreground">Admins</div>
+                      </div>
+                    </div>
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="config" className="space-y-4">
+                  <div className="text-center py-16">
+                    <Settings className="h-16 w-16 mx-auto text-muted-foreground/50 mb-4" />
+                    <h3 className="text-xl font-semibold mb-2">Configuration Settings</h3>
+                    <p className="text-muted-foreground mb-6">
+                      Advanced system configuration options coming soon
+                    </p>
+                    <Button asChild className="rounded-2xl">
+                      <Link to="/admin/users">
+                        Manage Users
+                      </Link>
+                    </Button>
+                  </div>
+                </TabsContent>
+              </Tabs>
+            </CardContent>
+          </Card>
         </div>
       </Layout>
     </ProtectedRoute>

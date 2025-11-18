@@ -8,7 +8,7 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { PriorityBadge } from "@/components/PriorityBadge";
 import { formatDistanceToNow } from "date-fns";
 import { Link } from "react-router-dom";
-import { AlertCircle, Clock, CheckCircle, FileText } from "lucide-react";
+import { AlertCircle, Clock, CheckCircle, FileText, CheckCircle2 } from "lucide-react";
 
 const StaffDashboard = () => {
   const { data: complaints, isLoading } = useQuery({
@@ -54,173 +54,166 @@ const StaffDashboard = () => {
   return (
     <ProtectedRoute allowedRoles={["STAFF", "ADMIN"]}>
       <Layout>
-        <div className="space-y-6">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Staff Dashboard</h1>
-            <p className="text-muted-foreground">
-              Manage and resolve student complaints
+        <div className="space-y-8 p-6 md:p-10">
+          {/* Header Section */}
+          <div className="bg-gradient-to-br from-primary via-accent to-primary-light rounded-3xl p-8 md:p-12 text-white shadow-lg">
+            <h1 className="text-4xl md:text-5xl font-bold mb-3">Staff Dashboard</h1>
+            <p className="text-white/90 text-lg">
+              Manage and resolve student complaints efficiently
             </p>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-4">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total</CardTitle>
-                <FileText className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stats?.total || 0}</div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Open</CardTitle>
-                <Clock className="h-4 w-4 text-warning" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stats?.open || 0}</div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">SLA Breached</CardTitle>
-                <AlertCircle className="h-4 w-4 text-destructive" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-destructive">{stats?.slaBreached || 0}</div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Resolved</CardTitle>
-                <CheckCircle className="h-4 w-4 text-success" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stats?.resolved || 0}</div>
-              </CardContent>
-            </Card>
+          {/* Stats Grid */}
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            <div className="stat-card">
+              <div className="flex items-center justify-between mb-4">
+                <FileText className="h-10 w-10 text-primary" />
+                <div className="text-4xl font-bold text-foreground">{stats?.total || 0}</div>
+              </div>
+              <h3 className="text-lg font-semibold text-foreground">Total</h3>
+              <p className="text-sm text-muted-foreground mt-1">All complaints</p>
+            </div>
+
+            <div className="stat-card">
+              <div className="flex items-center justify-between mb-4">
+                <Clock className="h-10 w-10 text-warning" />
+                <div className="text-4xl font-bold text-warning">{stats?.open || 0}</div>
+              </div>
+              <h3 className="text-lg font-semibold text-foreground">Open</h3>
+              <p className="text-sm text-muted-foreground mt-1">Needs attention</p>
+            </div>
+
+            <div className="stat-card">
+              <div className="flex items-center justify-between mb-4">
+                <AlertCircle className="h-10 w-10 text-destructive" />
+                <div className="text-4xl font-bold text-destructive">{stats?.slaBreached || 0}</div>
+              </div>
+              <h3 className="text-lg font-semibold text-foreground">SLA Breached</h3>
+              <p className="text-sm text-muted-foreground mt-1">Urgent action required</p>
+            </div>
+
+            <div className="stat-card">
+              <div className="flex items-center justify-between mb-4">
+                <CheckCircle className="h-10 w-10 text-success" />
+                <div className="text-4xl font-bold text-success">{stats?.resolved || 0}</div>
+              </div>
+              <h3 className="text-lg font-semibold text-foreground">Resolved</h3>
+              <p className="text-sm text-muted-foreground mt-1">Completed</p>
+            </div>
           </div>
 
-          <Tabs defaultValue="open" className="space-y-4">
-            <TabsList>
-              <TabsTrigger value="open">Open Complaints</TabsTrigger>
-              <TabsTrigger value="resolved">Resolved</TabsTrigger>
-            </TabsList>
+          {/* Complaints Tabs */}
+          <Card className="rounded-3xl shadow-lg border-0">
+            <CardHeader className="p-6 md:p-8">
+              <CardTitle className="text-2xl font-bold">Complaints Queue</CardTitle>
+              <CardDescription className="text-base">
+                Review and manage student complaints
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="p-6 md:p-8 pt-0">
+              <Tabs defaultValue="open" className="space-y-6">
+                <TabsList className="bg-muted/50 p-1 rounded-2xl">
+                  <TabsTrigger value="open" className="rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                    Open ({openComplaints?.length || 0})
+                  </TabsTrigger>
+                  <TabsTrigger value="resolved" className="rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                    Resolved ({resolvedComplaints?.length || 0})
+                  </TabsTrigger>
+                </TabsList>
 
-            <TabsContent value="open" className="space-y-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Open Complaints</CardTitle>
-                  <CardDescription>
-                    Complaints requiring attention
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
+                <TabsContent value="open" className="space-y-4">
                   {isLoading ? (
-                    <div className="text-center py-8 text-muted-foreground">
-                      Loading complaints...
+                    <div className="text-center py-12">
+                      <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent"></div>
+                      <p className="mt-4 text-muted-foreground">Loading complaints...</p>
                     </div>
                   ) : openComplaints && openComplaints.length > 0 ? (
-                    <div className="space-y-4">
-                      {openComplaints.map((complaint) => (
-                        <Link
-                          key={complaint.id}
-                          to={`/staff/complaint/${complaint.id}`}
-                          className="block"
-                        >
-                          <div className="flex items-start gap-4 p-4 rounded-lg border hover:bg-accent/50 transition-colors">
-                            <div className="flex-1 space-y-1">
-                              <div className="flex items-center gap-2 flex-wrap">
-                                <span className="font-mono text-xs text-muted-foreground">
-                                  {complaint.code}
+                    openComplaints.map((complaint) => (
+                      <Link
+                        key={complaint.id}
+                        to={`/staff/complaint/${complaint.id}`}
+                        className="block group"
+                      >
+                        <div className="p-6 rounded-2xl border border-border bg-card hover:bg-accent/5 hover:border-primary/20 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
+                          <div className="flex flex-col gap-4">
+                            <div className="flex flex-wrap items-center gap-3">
+                              <span className="text-sm font-mono font-semibold text-primary bg-primary/10 px-3 py-1 rounded-lg">
+                                {complaint.code}
+                              </span>
+                              <StatusBadge status={complaint.status} />
+                              <PriorityBadge priority={complaint.priority} />
+                              {complaint.is_sla_breached && (
+                                <span className="text-xs font-semibold text-destructive bg-destructive/10 px-3 py-1 rounded-lg">
+                                  SLA BREACHED
                                 </span>
-                                <StatusBadge status={complaint.status as any} />
-                                <PriorityBadge priority={complaint.priority as any} />
-                                {complaint.is_sla_breached && (
-                                  <span className="text-xs px-2 py-1 rounded-full bg-destructive/10 text-destructive font-medium">
-                                    SLA Breached
-                                  </span>
-                                )}
-                              </div>
-                              <h3 className="font-semibold">{complaint.title}</h3>
-                              <p className="text-sm text-muted-foreground line-clamp-2">
-                                {complaint.description}
-                              </p>
-                              <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                                <span>By: {complaint.student?.name}</span>
-                                <span>• {complaint.department?.name}</span>
-                                {complaint.assignee && <span>• Assigned to: {complaint.assignee.name}</span>}
-                                <span>
-                                  • {formatDistanceToNow(new Date(complaint.created_at), { addSuffix: true })}
-                                </span>
-                              </div>
+                              )}
+                            </div>
+                            <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">
+                              {complaint.title}
+                            </h3>
+                            <p className="text-sm text-muted-foreground line-clamp-2">
+                              {complaint.description}
+                            </p>
+                            <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+                              <span>Student: {complaint.student?.name}</span>
+                              <span>Department: {complaint.department?.name}</span>
+                              {complaint.assignee && <span>Assigned: {complaint.assignee.name}</span>}
+                              <span>{formatDistanceToNow(new Date(complaint.created_at), { addSuffix: true })}</span>
                             </div>
                           </div>
-                        </Link>
-                      ))}
-                    </div>
+                        </div>
+                      </Link>
+                    ))
                   ) : (
-                    <div className="text-center py-8 text-muted-foreground">
-                      No open complaints
+                    <div className="text-center py-16">
+                      <CheckCircle2 className="h-16 w-16 mx-auto text-muted-foreground/50 mb-4" />
+                      <h3 className="text-xl font-semibold mb-2">All caught up!</h3>
+                      <p className="text-muted-foreground">No open complaints at the moment</p>
                     </div>
                   )}
-                </CardContent>
-              </Card>
-            </TabsContent>
+                </TabsContent>
 
-            <TabsContent value="resolved" className="space-y-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Resolved Complaints</CardTitle>
-                  <CardDescription>
-                    Recently resolved complaints
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {isLoading ? (
-                    <div className="text-center py-8 text-muted-foreground">
-                      Loading complaints...
-                    </div>
-                  ) : resolvedComplaints && resolvedComplaints.length > 0 ? (
-                    <div className="space-y-4">
-                      {resolvedComplaints.slice(0, 20).map((complaint) => (
-                        <Link
-                          key={complaint.id}
-                          to={`/staff/complaint/${complaint.id}`}
-                          className="block"
-                        >
-                          <div className="flex items-start gap-4 p-4 rounded-lg border hover:bg-accent/50 transition-colors">
-                            <div className="flex-1 space-y-1">
-                              <div className="flex items-center gap-2">
-                                <span className="font-mono text-xs text-muted-foreground">
-                                  {complaint.code}
-                                </span>
-                                <StatusBadge status={complaint.status as any} />
-                                <PriorityBadge priority={complaint.priority as any} />
-                              </div>
-                              <h3 className="font-semibold">{complaint.title}</h3>
-                              <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                                <span>By: {complaint.student?.name}</span>
-                                <span>• {complaint.department?.name}</span>
-                                {complaint.assignee && <span>• Resolved by: {complaint.assignee.name}</span>}
-                                <span>
-                                  • {formatDistanceToNow(new Date(complaint.resolved_at || complaint.created_at), { addSuffix: true })}
-                                </span>
-                              </div>
+                <TabsContent value="resolved" className="space-y-4">
+                  {resolvedComplaints && resolvedComplaints.length > 0 ? (
+                    resolvedComplaints.map((complaint) => (
+                      <Link
+                        key={complaint.id}
+                        to={`/staff/complaint/${complaint.id}`}
+                        className="block group"
+                      >
+                        <div className="p-6 rounded-2xl border border-border bg-card hover:bg-accent/5 hover:border-primary/20 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
+                          <div className="flex flex-col gap-4">
+                            <div className="flex flex-wrap items-center gap-3">
+                              <span className="text-sm font-mono font-semibold text-primary bg-primary/10 px-3 py-1 rounded-lg">
+                                {complaint.code}
+                              </span>
+                              <StatusBadge status={complaint.status} />
+                              <PriorityBadge priority={complaint.priority} />
+                            </div>
+                            <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">
+                              {complaint.title}
+                            </h3>
+                            <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+                              <span>Student: {complaint.student?.name}</span>
+                              <span>Department: {complaint.department?.name}</span>
+                              {complaint.assignee && <span>Resolved by: {complaint.assignee.name}</span>}
+                              <span>{formatDistanceToNow(new Date(complaint.resolved_at || complaint.updated_at), { addSuffix: true })}</span>
                             </div>
                           </div>
-                        </Link>
-                      ))}
-                    </div>
+                        </div>
+                      </Link>
+                    ))
                   ) : (
-                    <div className="text-center py-8 text-muted-foreground">
-                      No resolved complaints yet
+                    <div className="text-center py-16">
+                      <FileText className="h-16 w-16 mx-auto text-muted-foreground/50 mb-4" />
+                      <h3 className="text-xl font-semibold mb-2">No resolved complaints</h3>
+                      <p className="text-muted-foreground">Resolved complaints will appear here</p>
                     </div>
                   )}
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
+                </TabsContent>
+              </Tabs>
+            </CardContent>
+          </Card>
         </div>
       </Layout>
     </ProtectedRoute>
