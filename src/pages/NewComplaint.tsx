@@ -12,7 +12,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
-import { Loader2, ArrowLeft } from "lucide-react";
+import { Loader2, ArrowLeft, FileText } from "lucide-react";
 
 const NewComplaint = () => {
   const [title, setTitle] = useState("");
@@ -108,33 +108,42 @@ const NewComplaint = () => {
   return (
     <ProtectedRoute allowedRoles={["STUDENT"]}>
       <Layout>
-        <div className="max-w-2xl mx-auto space-y-6">
-          <div>
+        <div className="space-y-8 p-6 md:p-10">
+          {/* Header Section with Gradient */}
+          <div className="bg-gradient-to-br from-primary via-accent to-primary-light rounded-3xl p-8 md:p-12 text-primary-foreground shadow-lg">
             <Button
               variant="ghost"
               onClick={() => navigate("/student")}
-              className="mb-4"
+              className="mb-4 text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10 rounded-xl"
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Dashboard
             </Button>
-            <h1 className="text-3xl font-bold tracking-tight">Submit New Complaint</h1>
-            <p className="text-muted-foreground">
-              Fill in the details below to submit your complaint
-            </p>
+            <div className="flex items-center gap-4">
+              <div className="p-4 bg-primary-foreground/10 rounded-2xl">
+                <FileText className="h-10 w-10" />
+              </div>
+              <div>
+                <h1 className="text-4xl md:text-5xl font-bold mb-2">Submit New Complaint</h1>
+                <p className="text-primary-foreground/90 text-lg">
+                  Fill in the details below to submit your complaint
+                </p>
+              </div>
+            </div>
           </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Complaint Details</CardTitle>
-              <CardDescription>
+          {/* Form Card */}
+          <Card className="rounded-3xl shadow-lg border-0 max-w-3xl mx-auto">
+            <CardHeader className="p-6 md:p-8">
+              <CardTitle className="text-2xl font-bold">Complaint Details</CardTitle>
+              <CardDescription className="text-base">
                 Please provide clear and detailed information about your concern
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-4">
+            <CardContent className="p-6 md:p-8 pt-0">
+              <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-2">
-                  <Label htmlFor="title">
+                  <Label htmlFor="title" className="text-sm font-semibold">
                     Title <span className="text-destructive">*</span>
                   </Label>
                   <Input
@@ -144,6 +153,7 @@ const NewComplaint = () => {
                     onChange={(e) => setTitle(e.target.value)}
                     maxLength={200}
                     required
+                    className="rounded-xl h-12"
                   />
                   <p className="text-xs text-muted-foreground">
                     {title.length}/200 characters
@@ -151,7 +161,7 @@ const NewComplaint = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="description">
+                  <Label htmlFor="description" className="text-sm font-semibold">
                     Description <span className="text-destructive">*</span>
                   </Label>
                   <Textarea
@@ -162,15 +172,16 @@ const NewComplaint = () => {
                     rows={6}
                     maxLength={2000}
                     required
+                    className="rounded-xl resize-none"
                   />
                   <p className="text-xs text-muted-foreground">
                     {description.length}/2000 characters
                   </p>
                 </div>
 
-                <div className="grid gap-4 md:grid-cols-2">
+                <div className="grid gap-6 md:grid-cols-2">
                   <div className="space-y-2">
-                    <Label htmlFor="department">
+                    <Label htmlFor="department" className="text-sm font-semibold">
                       Department <span className="text-destructive">*</span>
                     </Label>
                     <Select
@@ -178,12 +189,12 @@ const NewComplaint = () => {
                       onValueChange={setDepartmentId}
                       required
                     >
-                      <SelectTrigger id="department">
+                      <SelectTrigger id="department" className="rounded-xl h-12">
                         <SelectValue placeholder="Select department" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="rounded-xl">
                         {departments?.map((dept) => (
-                          <SelectItem key={dept.id} value={dept.id.toString()}>
+                          <SelectItem key={dept.id} value={dept.id.toString()} className="rounded-lg">
                             {dept.name}
                           </SelectItem>
                         ))}
@@ -192,14 +203,14 @@ const NewComplaint = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="category">Category</Label>
+                    <Label htmlFor="category" className="text-sm font-semibold">Category</Label>
                     <Select value={categoryId} onValueChange={setCategoryId}>
-                      <SelectTrigger id="category">
+                      <SelectTrigger id="category" className="rounded-xl h-12">
                         <SelectValue placeholder="Select category (optional)" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="rounded-xl">
                         {categories?.map((cat) => (
-                          <SelectItem key={cat.id} value={cat.id.toString()}>
+                          <SelectItem key={cat.id} value={cat.id.toString()} className="rounded-lg">
                             {cat.name}
                           </SelectItem>
                         ))}
@@ -209,16 +220,16 @@ const NewComplaint = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="priority">Priority</Label>
+                  <Label htmlFor="priority" className="text-sm font-semibold">Priority</Label>
                   <Select value={priority} onValueChange={setPriority}>
-                    <SelectTrigger id="priority">
+                    <SelectTrigger id="priority" className="rounded-xl h-12">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="LOW">Low</SelectItem>
-                      <SelectItem value="MEDIUM">Medium (Default)</SelectItem>
-                      <SelectItem value="HIGH">High</SelectItem>
-                      <SelectItem value="CRITICAL">Critical</SelectItem>
+                    <SelectContent className="rounded-xl">
+                      <SelectItem value="LOW" className="rounded-lg">Low</SelectItem>
+                      <SelectItem value="MEDIUM" className="rounded-lg">Medium (Default)</SelectItem>
+                      <SelectItem value="HIGH" className="rounded-lg">High</SelectItem>
+                      <SelectItem value="CRITICAL" className="rounded-lg">Critical</SelectItem>
                     </SelectContent>
                   </Select>
                   <p className="text-xs text-muted-foreground">
@@ -226,20 +237,20 @@ const NewComplaint = () => {
                   </p>
                 </div>
 
-                <div className="flex gap-4 pt-4">
+                <div className="flex gap-4 pt-6">
                   <Button
                     type="button"
                     variant="outline"
                     onClick={() => navigate("/student")}
                     disabled={isSubmitting}
-                    className="flex-1"
+                    className="flex-1 rounded-xl h-12 hover:bg-muted/50"
                   >
                     Cancel
                   </Button>
                   <Button
                     type="submit"
                     disabled={isSubmitting}
-                    className="flex-1"
+                    className="flex-1 rounded-xl h-12 hover:scale-[1.02] transition-transform"
                   >
                     {isSubmitting ? (
                       <>

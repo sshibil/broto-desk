@@ -18,7 +18,7 @@ export const Layout = ({ children }: LayoutProps) => {
   const handleSignOut = async () => {
     await signOut();
     toast.success("Signed out successfully");
-    navigate("/auth");
+    navigate("/");
   };
 
   return (
