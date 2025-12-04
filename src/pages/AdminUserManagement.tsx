@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2, Shield, User, Users, UserPlus } from "lucide-react";
+import { Loader2, Shield, User, Users, UserPlus, FileText } from "lucide-react";
 import { toast } from "sonner";
 
 interface UserWithRole {
@@ -192,6 +192,14 @@ export default function AdminUserManagement() {
     }
   };
 
+  // Calculate stats
+  const stats = {
+    total: users.length,
+    students: users.filter(u => u.role === "STUDENT").length,
+    staff: users.filter(u => u.role === "STAFF").length,
+    admins: users.filter(u => u.role === "ADMIN").length,
+  };
+
   if (loading) {
     return (
       <Layout>
@@ -207,122 +215,184 @@ export default function AdminUserManagement() {
   return (
     <Layout>
       <ProtectedRoute allowedRoles={["ADMIN"]}>
-        <div className="container mx-auto py-8 px-4">
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="text-3xl">User Management</CardTitle>
-                  <CardDescription>
-                    Manage user roles and permissions across the system
-                  </CardDescription>
-                </div>
-                <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-                  <DialogTrigger asChild>
-                    <Button>
-                      <UserPlus className="mr-2 h-4 w-4" />
-                      Add User
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Create New User</DialogTitle>
-                      <DialogDescription>
-                        Add a new user to the system with their email, password, and role
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="space-y-4 py-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="name">Full Name</Label>
-                        <Input
-                          id="name"
-                          placeholder="John Doe"
-                          value={newUser.name}
-                          onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="email">Email</Label>
-                        <Input
-                          id="email"
-                          type="email"
-                          placeholder="user@example.com"
-                          value={newUser.email}
-                          onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="password">Password</Label>
-                        <Input
-                          id="password"
-                          type="password"
-                          placeholder="Min. 6 characters"
-                          value={newUser.password}
-                          onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="role">Role</Label>
-                        <Select 
-                          value={newUser.role} 
-                          onValueChange={(value: "STUDENT" | "STAFF" | "ADMIN") => 
-                            setNewUser({ ...newUser, role: value })
-                          }
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="STUDENT">Student</SelectItem>
-                            <SelectItem value="STAFF">Staff</SelectItem>
-                            <SelectItem value="ADMIN">Admin</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-                    <DialogFooter>
-                      <Button 
-                        variant="outline" 
-                        onClick={() => setDialogOpen(false)}
-                        disabled={creating}
-                      >
-                        Cancel
-                      </Button>
-                      <Button onClick={handleCreateUser} disabled={creating}>
-                        {creating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                        Create User
-                      </Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
+        <div className="space-y-8 p-6 md:p-10">
+          {/* Header Section with Gradient */}
+          <div className="bg-gradient-to-br from-primary via-accent to-primary-light rounded-3xl p-8 md:p-12 text-primary-foreground shadow-lg">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+              <div>
+                <h1 className="text-4xl md:text-5xl font-bold mb-3">User Management</h1>
+                <p className="text-primary-foreground/90 text-lg">
+                  Manage user roles and permissions across the system
+                </p>
               </div>
+              <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button 
+                    variant="secondary"
+                    size="lg"
+                    className="bg-background text-primary hover:bg-background/90 rounded-2xl shadow-md hover:shadow-xl transition-all hover:scale-105"
+                  >
+                    <UserPlus className="mr-2 h-5 w-5" />
+                    Add User
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="rounded-3xl">
+                  <DialogHeader>
+                    <DialogTitle className="text-2xl font-bold">Create New User</DialogTitle>
+                    <DialogDescription className="text-base">
+                      Add a new user to the system with their email, password, and role
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4 py-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="name" className="text-sm font-semibold">Full Name</Label>
+                      <Input
+                        id="name"
+                        placeholder="John Doe"
+                        value={newUser.name}
+                        onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
+                        className="rounded-xl h-12"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="email" className="text-sm font-semibold">Email</Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        placeholder="user@example.com"
+                        value={newUser.email}
+                        onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+                        className="rounded-xl h-12"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="password" className="text-sm font-semibold">Password</Label>
+                      <Input
+                        id="password"
+                        type="password"
+                        placeholder="Min. 6 characters"
+                        value={newUser.password}
+                        onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+                        className="rounded-xl h-12"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="role" className="text-sm font-semibold">Role</Label>
+                      <Select 
+                        value={newUser.role} 
+                        onValueChange={(value: "STUDENT" | "STAFF" | "ADMIN") => 
+                          setNewUser({ ...newUser, role: value })
+                        }
+                      >
+                        <SelectTrigger className="rounded-xl h-12">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="rounded-xl">
+                          <SelectItem value="STUDENT" className="rounded-lg">Student</SelectItem>
+                          <SelectItem value="STAFF" className="rounded-lg">Staff</SelectItem>
+                          <SelectItem value="ADMIN" className="rounded-lg">Admin</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <DialogFooter className="gap-3">
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setDialogOpen(false)}
+                      disabled={creating}
+                      className="rounded-xl"
+                    >
+                      Cancel
+                    </Button>
+                    <Button onClick={handleCreateUser} disabled={creating} className="rounded-xl">
+                      {creating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                      Create User
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </div>
+          </div>
+
+          {/* Stats Cards */}
+          <div className="grid gap-6 md:grid-cols-4">
+            <div className="stat-card group">
+              <div className="flex items-center justify-between mb-4">
+                <Users className="h-10 w-10 text-primary" />
+                <div className="text-4xl font-bold text-foreground">{stats.total}</div>
+              </div>
+              <h3 className="text-lg font-semibold text-foreground">Total Users</h3>
+              <p className="text-sm text-muted-foreground mt-1">All registered users</p>
+            </div>
+
+            <div className="stat-card group">
+              <div className="flex items-center justify-between mb-4">
+                <User className="h-10 w-10 text-accent" />
+                <div className="text-4xl font-bold text-accent">{stats.students}</div>
+              </div>
+              <h3 className="text-lg font-semibold text-foreground">Students</h3>
+              <p className="text-sm text-muted-foreground mt-1">Student accounts</p>
+            </div>
+
+            <div className="stat-card group">
+              <div className="flex items-center justify-between mb-4">
+                <FileText className="h-10 w-10 text-primary-light" />
+                <div className="text-4xl font-bold text-primary-light">{stats.staff}</div>
+              </div>
+              <h3 className="text-lg font-semibold text-foreground">Staff</h3>
+              <p className="text-sm text-muted-foreground mt-1">Staff members</p>
+            </div>
+
+            <div className="stat-card group">
+              <div className="flex items-center justify-between mb-4">
+                <Shield className="h-10 w-10 text-destructive" />
+                <div className="text-4xl font-bold text-destructive">{stats.admins}</div>
+              </div>
+              <h3 className="text-lg font-semibold text-foreground">Admins</h3>
+              <p className="text-sm text-muted-foreground mt-1">Administrators</p>
+            </div>
+          </div>
+
+          {/* Users Table */}
+          <Card className="rounded-3xl shadow-lg border-0">
+            <CardHeader className="p-6 md:p-8">
+              <CardTitle className="text-2xl font-bold">All Users</CardTitle>
+              <CardDescription className="text-base">
+                View and manage all registered users in the system
+              </CardDescription>
             </CardHeader>
-            <CardContent>
-              <div className="rounded-md border">
+            <CardContent className="p-6 md:p-8 pt-0">
+              <div className="rounded-2xl border border-border overflow-hidden">
                 <Table>
                   <TableHeader>
-                    <TableRow>
-                      <TableHead>Email</TableHead>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Current Role</TableHead>
-                      <TableHead>Complaints</TableHead>
-                      <TableHead>Change Role</TableHead>
-                      <TableHead>Status</TableHead>
+                    <TableRow className="bg-muted/50 hover:bg-muted/50">
+                      <TableHead className="font-semibold">User</TableHead>
+                      <TableHead className="font-semibold">Current Role</TableHead>
+                      <TableHead className="font-semibold">Complaints</TableHead>
+                      <TableHead className="font-semibold">Change Role</TableHead>
+                      <TableHead className="font-semibold">Status</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {users.map((user) => (
-                      <TableRow key={user.id}>
-                        <TableCell className="font-medium">{user.email}</TableCell>
-                        <TableCell>{user.name}</TableCell>
+                      <TableRow 
+                        key={user.id} 
+                        className="hover:bg-accent/5 transition-colors duration-200"
+                      >
                         <TableCell>
-                          <Badge variant={getRoleBadgeVariant(user.role)} className="gap-1">
+                          <div className="flex flex-col">
+                            <span className="font-semibold text-foreground">{user.name}</span>
+                            <span className="text-sm text-muted-foreground">{user.email}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant={getRoleBadgeVariant(user.role)} className="gap-1 rounded-lg">
                             {getRoleIcon(user.role)}
                             {user.role}
                           </Badge>
                         </TableCell>
                         <TableCell>
-                          <Badge variant="outline">
+                          <Badge variant="outline" className="rounded-lg">
                             {user.complaint_count || 0}
                           </Badge>
                         </TableCell>
@@ -331,18 +401,21 @@ export default function AdminUserManagement() {
                             value={user.role}
                             onValueChange={(value) => handleRoleChange(user.id, value as "STUDENT" | "STAFF" | "ADMIN")}
                           >
-                            <SelectTrigger className="w-[140px]">
+                            <SelectTrigger className="w-[140px] rounded-xl">
                               <SelectValue />
                             </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="STUDENT">Student</SelectItem>
-                              <SelectItem value="STAFF">Staff</SelectItem>
-                              <SelectItem value="ADMIN">Admin</SelectItem>
+                            <SelectContent className="rounded-xl">
+                              <SelectItem value="STUDENT" className="rounded-lg">Student</SelectItem>
+                              <SelectItem value="STAFF" className="rounded-lg">Staff</SelectItem>
+                              <SelectItem value="ADMIN" className="rounded-lg">Admin</SelectItem>
                             </SelectContent>
                           </Select>
                         </TableCell>
                         <TableCell>
-                          <Badge variant={user.is_active ? "default" : "outline"}>
+                          <Badge 
+                            variant={user.is_active ? "default" : "outline"}
+                            className={`rounded-lg ${user.is_active ? 'bg-success text-success-foreground' : ''}`}
+                          >
                             {user.is_active ? "Active" : "Inactive"}
                           </Badge>
                         </TableCell>
