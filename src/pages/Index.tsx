@@ -1,20 +1,92 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowRight, Shield, Zap, Users, MapPin, User, Mail, Lock } from "lucide-react";
+import { ArrowRight, Shield, Zap, Users, MapPin, User, Mail, Lock, Loader2, KeyRound } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { toast } from "sonner";
 
 const Index = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, signIn, signUp, resetPassword } = useAuth();
+  
+  const [isLoading, setIsLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState("login");
+  
+  // Login form
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
+  
+  // Signup form
+  const [signupName, setSignupName] = useState("");
+  const [signupEmail, setSignupEmail] = useState("");
+  const [signupPassword, setSignupPassword] = useState("");
+  
+  // Forgot password
+  const [forgotEmail, setForgotEmail] = useState("");
 
   useEffect(() => {
     if (user) {
       navigate("/dashboard");
     }
   }, [user, navigate]);
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    const { error } = await signIn(loginEmail, loginPassword);
+
+    if (error) {
+      toast.error(error.message);
+    } else {
+      toast.success("Signed in successfully!");
+      navigate("/dashboard");
+    }
+
+    setIsLoading(false);
+  };
+
+  const handleSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    if (signupPassword.length < 6) {
+      toast.error("Password must be at least 6 characters long");
+      setIsLoading(false);
+      return;
+    }
+
+    const { error } = await signUp(signupEmail, signupPassword, signupName);
+
+    if (error) {
+      toast.error(error.message);
+    } else {
+      toast.success("Account created successfully!");
+      navigate("/dashboard");
+    }
+
+    setIsLoading(false);
+  };
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    const { error } = await resetPassword(forgotEmail);
+
+    if (error) {
+      toast.error(error.message);
+    } else {
+      toast.success("Password reset email sent! Check your inbox.");
+      setActiveTab("login");
+      setForgotEmail("");
+    }
+
+    setIsLoading(false);
+  };
 
   return (
     <div className="min-h-screen bg-[#F5F7FA] relative overflow-hidden">
@@ -108,72 +180,200 @@ const Index = () => {
           {/* Right Card - Login/Signup Card */}
           <Card className="rounded-[30px] shadow-xl border-0 bg-white animate-in fade-in slide-in-from-right duration-1000 delay-300">
             <CardContent className="p-10">
-              <div className="space-y-8">
+              <div className="space-y-6">
                 {/* Avatar */}
                 <div className="flex justify-center">
-                  <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg">
-                    <User className="h-12 w-12 text-white" />
+                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg">
+                    <User className="h-10 w-10 text-white" />
                   </div>
                 </div>
 
-                <div className="text-center space-y-2">
-                  <h3 className="text-3xl font-bold text-foreground">Sign In</h3>
-                  <p className="text-muted-foreground">Access your complaint dashboard</p>
-                </div>
+                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                  <TabsList className="grid w-full grid-cols-3 h-12 rounded-2xl bg-muted/50">
+                    <TabsTrigger value="login" className="rounded-xl font-semibold">Sign In</TabsTrigger>
+                    <TabsTrigger value="signup" className="rounded-xl font-semibold">Sign Up</TabsTrigger>
+                    <TabsTrigger value="forgot" className="rounded-xl font-semibold">Forgot</TabsTrigger>
+                  </TabsList>
+                  
+                  {/* Login Tab */}
+                  <TabsContent value="login" className="mt-6">
+                    <form onSubmit={handleLogin} className="space-y-5">
+                      <div className="space-y-2">
+                        <label className="text-sm font-semibold text-foreground">Email Address</label>
+                        <div className="relative">
+                          <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                          <Input 
+                            type="email" 
+                            placeholder="Enter your email"
+                            value={loginEmail}
+                            onChange={(e) => setLoginEmail(e.target.value)}
+                            required
+                            className="pl-12 h-14 rounded-2xl border-2 border-border focus:border-primary transition-all"
+                          />
+                        </div>
+                      </div>
 
-                {/* Form */}
-                <div className="space-y-6">
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold text-foreground">Email Address</label>
-                    <div className="relative">
-                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                      <Input 
-                        type="email" 
-                        placeholder="Enter your email"
-                        className="pl-12 h-14 rounded-2xl border-2 border-border focus:border-primary transition-all"
-                      />
-                    </div>
-                  </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-semibold text-foreground">Password</label>
+                        <div className="relative">
+                          <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                          <Input 
+                            type="password" 
+                            placeholder="Enter your password"
+                            value={loginPassword}
+                            onChange={(e) => setLoginPassword(e.target.value)}
+                            required
+                            className="pl-12 h-14 rounded-2xl border-2 border-border focus:border-primary transition-all"
+                          />
+                        </div>
+                      </div>
 
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold text-foreground">Password</label>
-                    <div className="relative">
-                      <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                      <Input 
-                        type="password" 
-                        placeholder="Enter your password"
-                        className="pl-12 h-14 rounded-2xl border-2 border-border focus:border-primary transition-all"
-                      />
-                    </div>
-                  </div>
+                      <Button 
+                        type="submit"
+                        size="lg" 
+                        disabled={isLoading}
+                        className="w-full h-14 rounded-2xl bg-gradient-to-r from-primary to-accent hover:opacity-90 shadow-lg hover:shadow-xl transition-all group font-semibold text-lg"
+                      >
+                        {isLoading ? (
+                          <>
+                            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                            Signing in...
+                          </>
+                        ) : (
+                          <>
+                            Sign In
+                            <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                          </>
+                        )}
+                      </Button>
+                    </form>
+                  </TabsContent>
+                  
+                  {/* Signup Tab */}
+                  <TabsContent value="signup" className="mt-6">
+                    <form onSubmit={handleSignup} className="space-y-4">
+                      <div className="space-y-2">
+                        <label className="text-sm font-semibold text-foreground">Full Name</label>
+                        <div className="relative">
+                          <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                          <Input 
+                            type="text" 
+                            placeholder="Enter your name"
+                            value={signupName}
+                            onChange={(e) => setSignupName(e.target.value)}
+                            required
+                            className="pl-12 h-14 rounded-2xl border-2 border-border focus:border-primary transition-all"
+                          />
+                        </div>
+                      </div>
 
-                  <Button 
-                    size="lg" 
-                    onClick={() => navigate("/auth")}
-                    className="w-full h-14 rounded-2xl bg-gradient-to-r from-primary to-accent hover:opacity-90 shadow-lg hover:shadow-xl transition-all group font-semibold text-lg"
-                  >
-                    Sign In
-                    <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-                  </Button>
+                      <div className="space-y-2">
+                        <label className="text-sm font-semibold text-foreground">Email Address</label>
+                        <div className="relative">
+                          <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                          <Input 
+                            type="email" 
+                            placeholder="Enter your email"
+                            value={signupEmail}
+                            onChange={(e) => setSignupEmail(e.target.value)}
+                            required
+                            className="pl-12 h-14 rounded-2xl border-2 border-border focus:border-primary transition-all"
+                          />
+                        </div>
+                      </div>
 
-                  <div className="relative">
-                    <div className="absolute inset-0 flex items-center">
-                      <div className="w-full border-t border-border"></div>
-                    </div>
-                    <div className="relative flex justify-center text-sm">
-                      <span className="px-4 bg-white text-muted-foreground">OR</span>
-                    </div>
-                  </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-semibold text-foreground">Password</label>
+                        <div className="relative">
+                          <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                          <Input 
+                            type="password" 
+                            placeholder="Min. 6 characters"
+                            value={signupPassword}
+                            onChange={(e) => setSignupPassword(e.target.value)}
+                            required
+                            className="pl-12 h-14 rounded-2xl border-2 border-border focus:border-primary transition-all"
+                          />
+                        </div>
+                      </div>
 
-                  <Button 
-                    size="lg" 
-                    variant="outline"
-                    onClick={() => navigate("/auth")}
-                    className="w-full h-14 rounded-2xl border-2 hover:border-primary hover:bg-primary/5 transition-all font-semibold text-lg"
-                  >
-                    Create Account
-                  </Button>
-                </div>
+                      <Button 
+                        type="submit"
+                        size="lg" 
+                        disabled={isLoading}
+                        className="w-full h-14 rounded-2xl bg-gradient-to-r from-primary to-accent hover:opacity-90 shadow-lg hover:shadow-xl transition-all group font-semibold text-lg"
+                      >
+                        {isLoading ? (
+                          <>
+                            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                            Creating account...
+                          </>
+                        ) : (
+                          <>
+                            Create Account
+                            <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                          </>
+                        )}
+                      </Button>
+                    </form>
+                  </TabsContent>
+                  
+                  {/* Forgot Password Tab */}
+                  <TabsContent value="forgot" className="mt-6">
+                    <form onSubmit={handleForgotPassword} className="space-y-5">
+                      <div className="text-center space-y-2 mb-4">
+                        <div className="mx-auto w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                          <KeyRound className="h-8 w-8 text-primary" />
+                        </div>
+                        <h3 className="text-xl font-bold text-foreground">Reset Password</h3>
+                        <p className="text-sm text-muted-foreground">Enter your email to receive a reset link</p>
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="text-sm font-semibold text-foreground">Email Address</label>
+                        <div className="relative">
+                          <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                          <Input 
+                            type="email" 
+                            placeholder="Enter your email"
+                            value={forgotEmail}
+                            onChange={(e) => setForgotEmail(e.target.value)}
+                            required
+                            className="pl-12 h-14 rounded-2xl border-2 border-border focus:border-primary transition-all"
+                          />
+                        </div>
+                      </div>
+
+                      <Button 
+                        type="submit"
+                        size="lg" 
+                        disabled={isLoading}
+                        className="w-full h-14 rounded-2xl bg-gradient-to-r from-primary to-accent hover:opacity-90 shadow-lg hover:shadow-xl transition-all group font-semibold text-lg"
+                      >
+                        {isLoading ? (
+                          <>
+                            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                            Sending...
+                          </>
+                        ) : (
+                          <>
+                            Send Reset Link
+                            <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                          </>
+                        )}
+                      </Button>
+
+                      <Button 
+                        type="button"
+                        variant="ghost"
+                        onClick={() => setActiveTab("login")}
+                        className="w-full text-muted-foreground hover:text-foreground"
+                      >
+                        Back to Sign In
+                      </Button>
+                    </form>
+                  </TabsContent>
+                </Tabs>
               </div>
             </CardContent>
           </Card>
