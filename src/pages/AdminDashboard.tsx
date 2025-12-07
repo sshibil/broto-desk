@@ -2,7 +2,7 @@ import { Layout } from "@/components/Layout";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Users, Building2, Tag, Settings, FileText, AlertCircle } from "lucide-react";
+import { Users, Building2, Tag, Settings, FileText, AlertCircle, ArrowRight } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
@@ -42,9 +42,9 @@ const AdminDashboard = () => {
       <Layout>
         <div className="space-y-8 p-6 md:p-10">
           {/* Header Section */}
-          <div className="bg-gradient-to-br from-primary via-accent to-primary-light rounded-3xl p-8 md:p-12 text-white shadow-lg">
-            <h1 className="text-4xl md:text-5xl font-bold mb-3">Admin Dashboard</h1>
-            <p className="text-white/90 text-lg">
+          <div className="premium-card bg-primary p-8 md:p-12 green-glow">
+            <h1 className="text-4xl md:text-5xl font-bold text-primary-foreground mb-3">Admin Dashboard</h1>
+            <p className="text-primary-foreground/80 text-lg">
               System overview and configuration management
             </p>
           </div>
@@ -64,7 +64,7 @@ const AdminDashboard = () => {
 
             <div className="stat-card">
               <div className="flex items-center justify-between mb-4">
-                <FileText className="h-10 w-10 text-accent" />
+                <FileText className="h-10 w-10 text-primary" />
                 <div className="text-4xl font-bold text-foreground">{stats?.totalComplaints || 0}</div>
               </div>
               <h3 className="text-lg font-semibold text-foreground">Complaints</h3>
@@ -75,7 +75,7 @@ const AdminDashboard = () => {
 
             <div className="stat-card">
               <div className="flex items-center justify-between mb-4">
-                <Building2 className="h-10 w-10 text-primary-light" />
+                <Building2 className="h-10 w-10 text-primary" />
                 <div className="text-4xl font-bold text-foreground">{stats?.departments || 0}</div>
               </div>
               <h3 className="text-lg font-semibold text-foreground">Departments</h3>
@@ -84,7 +84,7 @@ const AdminDashboard = () => {
 
             <div className="stat-card">
               <div className="flex items-center justify-between mb-4">
-                <Tag className="h-10 w-10 text-accent" />
+                <Tag className="h-10 w-10 text-primary" />
                 <div className="text-4xl font-bold text-foreground">{stats?.categories || 0}</div>
               </div>
               <h3 className="text-lg font-semibold text-foreground">Categories</h3>
@@ -93,20 +93,20 @@ const AdminDashboard = () => {
           </div>
 
           {/* Tabs Section */}
-          <Card className="rounded-3xl shadow-lg border-0">
+          <Card className="premium-card">
             <CardHeader className="p-6 md:p-8">
-              <CardTitle className="text-2xl font-bold">System Management</CardTitle>
-              <CardDescription className="text-base">
+              <CardTitle className="text-2xl font-bold text-foreground">System Management</CardTitle>
+              <CardDescription className="text-base text-muted-foreground">
                 Configure and manage system settings
               </CardDescription>
             </CardHeader>
             <CardContent className="p-6 md:p-8 pt-0">
               <Tabs defaultValue="overview" className="space-y-6">
-                <TabsList className="bg-muted/50 p-1 rounded-2xl">
-                  <TabsTrigger value="overview" className="rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                <TabsList className="bg-muted/50 p-1 rounded-full">
+                  <TabsTrigger value="overview" className="rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                     Overview
                   </TabsTrigger>
-                  <TabsTrigger value="config" className="rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                  <TabsTrigger value="config" className="rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                     Configuration
                   </TabsTrigger>
                 </TabsList>
@@ -115,7 +115,7 @@ const AdminDashboard = () => {
                   <div className="grid gap-6 md:grid-cols-2">
                     {/* System Health */}
                     <div className="p-6 rounded-2xl border border-border bg-card">
-                      <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                      <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
                         <AlertCircle className="h-5 w-5 text-primary" />
                         System Health
                       </h3>
@@ -130,7 +130,7 @@ const AdminDashboard = () => {
                         </div>
                         <div className="flex justify-between items-center">
                           <span className="text-sm text-muted-foreground">Resolution Rate</span>
-                          <span className="text-lg font-bold text-success">
+                          <span className="text-lg font-bold text-primary">
                             {stats?.totalComplaints ? Math.round((stats.resolvedComplaints / stats.totalComplaints) * 100) : 0}%
                           </span>
                         </div>
@@ -139,21 +139,27 @@ const AdminDashboard = () => {
 
                     {/* Quick Actions */}
                     <div className="p-6 rounded-2xl border border-border bg-card">
-                      <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                      <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
                         <Settings className="h-5 w-5 text-primary" />
                         Quick Actions
                       </h3>
                       <div className="space-y-3">
-                        <Button asChild variant="outline" className="w-full justify-start rounded-xl h-12">
+                        <Button asChild variant="outline" className="w-full justify-between rounded-full h-12 border-border hover:border-primary/30 hover:bg-muted/50 group">
                           <Link to="/admin/users">
-                            <Users className="h-4 w-4 mr-2" />
-                            Manage Users
+                            <span className="flex items-center gap-2">
+                              <Users className="h-4 w-4" />
+                              Manage Users
+                            </span>
+                            <ArrowRight className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
                           </Link>
                         </Button>
-                        <Button asChild variant="outline" className="w-full justify-start rounded-xl h-12">
+                        <Button asChild variant="outline" className="w-full justify-between rounded-full h-12 border-border hover:border-primary/30 hover:bg-muted/50 group">
                           <Link to="/staff">
-                            <FileText className="h-4 w-4 mr-2" />
-                            View All Complaints
+                            <span className="flex items-center gap-2">
+                              <FileText className="h-4 w-4" />
+                              View All Complaints
+                            </span>
+                            <ArrowRight className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
                           </Link>
                         </Button>
                       </div>
@@ -162,18 +168,18 @@ const AdminDashboard = () => {
 
                   {/* User Distribution */}
                   <div className="p-6 rounded-2xl border border-border bg-card">
-                    <h3 className="text-lg font-semibold mb-4">User Distribution</h3>
+                    <h3 className="text-lg font-semibold text-foreground mb-4">User Distribution</h3>
                     <div className="grid gap-4 md:grid-cols-3">
-                      <div className="text-center p-4 rounded-xl bg-primary/5">
+                      <div className="text-center p-4 rounded-2xl bg-primary/10 border border-primary/20">
                         <div className="text-3xl font-bold text-primary mb-1">{stats?.students || 0}</div>
                         <div className="text-sm text-muted-foreground">Students</div>
                       </div>
-                      <div className="text-center p-4 rounded-xl bg-accent/5">
-                        <div className="text-3xl font-bold text-accent mb-1">{stats?.staff || 0}</div>
+                      <div className="text-center p-4 rounded-2xl bg-primary/10 border border-primary/20">
+                        <div className="text-3xl font-bold text-primary mb-1">{stats?.staff || 0}</div>
                         <div className="text-sm text-muted-foreground">Staff</div>
                       </div>
-                      <div className="text-center p-4 rounded-xl bg-primary-light/5">
-                        <div className="text-3xl font-bold text-primary-light mb-1">{stats?.admins || 0}</div>
+                      <div className="text-center p-4 rounded-2xl bg-primary/10 border border-primary/20">
+                        <div className="text-3xl font-bold text-primary mb-1">{stats?.admins || 0}</div>
                         <div className="text-sm text-muted-foreground">Admins</div>
                       </div>
                     </div>
@@ -183,11 +189,11 @@ const AdminDashboard = () => {
                 <TabsContent value="config" className="space-y-4">
                   <div className="text-center py-16">
                     <Settings className="h-16 w-16 mx-auto text-muted-foreground/50 mb-4" />
-                    <h3 className="text-xl font-semibold mb-2">Configuration Settings</h3>
+                    <h3 className="text-xl font-semibold text-foreground mb-2">Configuration Settings</h3>
                     <p className="text-muted-foreground mb-6">
                       Advanced system configuration options coming soon
                     </p>
-                    <Button asChild className="rounded-2xl">
+                    <Button asChild className="rounded-full bg-primary hover:bg-primary-light">
                       <Link to="/admin/users">
                         Manage Users
                       </Link>

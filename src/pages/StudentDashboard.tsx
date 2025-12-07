@@ -2,7 +2,7 @@ import { Layout } from "@/components/Layout";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, FileText, Clock } from "lucide-react";
+import { Plus, FileText, Clock, ArrowRight, CheckCircle2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -56,23 +56,29 @@ const StudentDashboard = () => {
     <ProtectedRoute allowedRoles={["STUDENT"]}>
       <Layout>
         <div className="space-y-8 p-6 md:p-10">
-          {/* Header Section with Gradient */}
-          <div className="bg-gradient-to-br from-primary via-accent to-primary-light rounded-3xl p-8 md:p-12 text-white shadow-lg">
-            <h1 className="text-4xl md:text-5xl font-bold mb-3">My Complaints</h1>
-            <p className="text-white/90 text-lg mb-6">
-              Submit and track your complaints with ease
-            </p>
-            <Button 
-              asChild 
-              variant="secondary"
-              size="lg"
-              className="bg-white text-primary hover:bg-white/90 rounded-2xl shadow-md hover:shadow-xl transition-all hover:scale-105"
-            >
-              <Link to="/student/new-complaint">
-                <Plus className="mr-2 h-5 w-5" />
-                New Complaint
-              </Link>
-            </Button>
+          {/* Header Section with Green Theme */}
+          <div className="premium-card bg-primary p-8 md:p-12 green-glow">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+              <div>
+                <h1 className="text-4xl md:text-5xl font-bold text-primary-foreground mb-3">My Complaints</h1>
+                <p className="text-primary-foreground/80 text-lg">
+                  Submit and track your complaints with ease
+                </p>
+              </div>
+              <Button 
+                asChild 
+                size="lg"
+                className="rounded-full bg-background text-foreground hover:bg-background/90 gap-3 pl-6 pr-4 py-6 group shadow-lg"
+              >
+                <Link to="/student/new-complaint">
+                  <Plus className="h-5 w-5" />
+                  New Complaint
+                  <span className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+                    <ArrowRight className="h-4 w-4 text-primary-foreground transition-transform group-hover:translate-x-1" />
+                  </span>
+                </Link>
+              </Button>
+            </div>
           </div>
 
           {/* Stats Cards */}
@@ -97,8 +103,8 @@ const StudentDashboard = () => {
 
             <div className="stat-card group">
               <div className="flex items-center justify-between mb-4">
-                <FileText className="h-10 w-10 text-success" />
-                <div className="text-4xl font-bold text-success">{stats?.resolved || 0}</div>
+                <CheckCircle2 className="h-10 w-10 text-primary" />
+                <div className="text-4xl font-bold text-primary">{stats?.resolved || 0}</div>
               </div>
               <h3 className="text-lg font-semibold text-foreground">Resolved</h3>
               <p className="text-sm text-muted-foreground mt-1">Successfully completed</p>
@@ -106,10 +112,10 @@ const StudentDashboard = () => {
           </div>
 
           {/* Complaints List */}
-          <Card className="rounded-3xl shadow-lg border-0">
+          <Card className="premium-card">
             <CardHeader className="p-6 md:p-8">
-              <CardTitle className="text-2xl font-bold">Recent Complaints</CardTitle>
-              <CardDescription className="text-base">
+              <CardTitle className="text-2xl font-bold text-foreground">Recent Complaints</CardTitle>
+              <CardDescription className="text-base text-muted-foreground">
                 View and manage all your submitted complaints
               </CardDescription>
             </CardHeader>
@@ -127,11 +133,11 @@ const StudentDashboard = () => {
                       to={`/student/complaint/${complaint.id}`}
                       className="block group"
                     >
-                      <div className="p-6 rounded-2xl border border-border bg-card hover:bg-accent/5 hover:border-primary/20 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
+                      <div className="p-6 rounded-2xl border border-border bg-card hover:bg-muted/50 hover:border-primary/30 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
                         <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                           <div className="flex-1 space-y-3">
                             <div className="flex flex-wrap items-center gap-3">
-                              <span className="text-sm font-mono font-semibold text-primary bg-primary/10 px-3 py-1 rounded-lg">
+                              <span className="text-sm font-mono font-semibold text-primary bg-primary/10 px-3 py-1 rounded-full">
                                 {complaint.code}
                               </span>
                               <StatusBadge status={complaint.status} />
@@ -160,6 +166,9 @@ const StudentDashboard = () => {
                               </span>
                             </div>
                           </div>
+                          <div className="arrow-button arrow-button-secondary opacity-0 group-hover:opacity-100 transition-opacity">
+                            <ArrowRight className="h-4 w-4" />
+                          </div>
                         </div>
                       </div>
                     </Link>
@@ -168,11 +177,11 @@ const StudentDashboard = () => {
               ) : (
                 <div className="text-center py-16">
                   <FileText className="h-16 w-16 mx-auto text-muted-foreground/50 mb-4" />
-                  <h3 className="text-xl font-semibold mb-2">No complaints yet</h3>
+                  <h3 className="text-xl font-semibold text-foreground mb-2">No complaints yet</h3>
                   <p className="text-muted-foreground mb-6">
                     Start by submitting your first complaint
                   </p>
-                  <Button asChild className="rounded-2xl">
+                  <Button asChild className="rounded-full bg-primary hover:bg-primary-light">
                     <Link to="/student/new-complaint">
                       <Plus className="mr-2 h-4 w-4" />
                       Submit Complaint

@@ -8,7 +8,7 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { PriorityBadge } from "@/components/PriorityBadge";
 import { formatDistanceToNow } from "date-fns";
 import { Link } from "react-router-dom";
-import { AlertCircle, Clock, CheckCircle, FileText, CheckCircle2 } from "lucide-react";
+import { AlertCircle, Clock, CheckCircle, FileText, CheckCircle2, ArrowRight } from "lucide-react";
 
 const StaffDashboard = () => {
   const { data: complaints, isLoading } = useQuery({
@@ -56,9 +56,9 @@ const StaffDashboard = () => {
       <Layout>
         <div className="space-y-8 p-6 md:p-10">
           {/* Header Section */}
-          <div className="bg-gradient-to-br from-primary via-accent to-primary-light rounded-3xl p-8 md:p-12 text-white shadow-lg">
-            <h1 className="text-4xl md:text-5xl font-bold mb-3">Staff Dashboard</h1>
-            <p className="text-white/90 text-lg">
+          <div className="premium-card bg-primary p-8 md:p-12 green-glow">
+            <h1 className="text-4xl md:text-5xl font-bold text-primary-foreground mb-3">Staff Dashboard</h1>
+            <p className="text-primary-foreground/80 text-lg">
               Manage and resolve student complaints efficiently
             </p>
           </div>
@@ -94,8 +94,8 @@ const StaffDashboard = () => {
 
             <div className="stat-card">
               <div className="flex items-center justify-between mb-4">
-                <CheckCircle className="h-10 w-10 text-success" />
-                <div className="text-4xl font-bold text-success">{stats?.resolved || 0}</div>
+                <CheckCircle className="h-10 w-10 text-primary" />
+                <div className="text-4xl font-bold text-primary">{stats?.resolved || 0}</div>
               </div>
               <h3 className="text-lg font-semibold text-foreground">Resolved</h3>
               <p className="text-sm text-muted-foreground mt-1">Completed</p>
@@ -103,20 +103,20 @@ const StaffDashboard = () => {
           </div>
 
           {/* Complaints Tabs */}
-          <Card className="rounded-3xl shadow-lg border-0">
+          <Card className="premium-card">
             <CardHeader className="p-6 md:p-8">
-              <CardTitle className="text-2xl font-bold">Complaints Queue</CardTitle>
-              <CardDescription className="text-base">
+              <CardTitle className="text-2xl font-bold text-foreground">Complaints Queue</CardTitle>
+              <CardDescription className="text-base text-muted-foreground">
                 Review and manage student complaints
               </CardDescription>
             </CardHeader>
             <CardContent className="p-6 md:p-8 pt-0">
               <Tabs defaultValue="open" className="space-y-6">
-                <TabsList className="bg-muted/50 p-1 rounded-2xl">
-                  <TabsTrigger value="open" className="rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                <TabsList className="bg-muted/50 p-1 rounded-full">
+                  <TabsTrigger value="open" className="rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                     Open ({openComplaints?.length || 0})
                   </TabsTrigger>
-                  <TabsTrigger value="resolved" className="rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                  <TabsTrigger value="resolved" className="rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                     Resolved ({resolvedComplaints?.length || 0})
                   </TabsTrigger>
                 </TabsList>
@@ -134,31 +134,38 @@ const StaffDashboard = () => {
                         to={`/staff/complaint/${complaint.id}`}
                         className="block group"
                       >
-                        <div className="p-6 rounded-2xl border border-border bg-card hover:bg-accent/5 hover:border-primary/20 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
+                        <div className="p-6 rounded-2xl border border-border bg-card hover:bg-muted/50 hover:border-primary/30 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
                           <div className="flex flex-col gap-4">
                             <div className="flex flex-wrap items-center gap-3">
-                              <span className="text-sm font-mono font-semibold text-primary bg-primary/10 px-3 py-1 rounded-lg">
+                              <span className="text-sm font-mono font-semibold text-primary bg-primary/10 px-3 py-1 rounded-full">
                                 {complaint.code}
                               </span>
                               <StatusBadge status={complaint.status} />
                               <PriorityBadge priority={complaint.priority} />
                               {complaint.is_sla_breached && (
-                                <span className="text-xs font-semibold text-destructive bg-destructive/10 px-3 py-1 rounded-lg">
+                                <span className="text-xs font-semibold text-destructive bg-destructive/10 px-3 py-1 rounded-full">
                                   SLA BREACHED
                                 </span>
                               )}
                             </div>
-                            <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">
-                              {complaint.title}
-                            </h3>
-                            <p className="text-sm text-muted-foreground line-clamp-2">
-                              {complaint.description}
-                            </p>
-                            <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-                              <span>Student: {complaint.student?.name}</span>
-                              <span>Department: {complaint.department?.name}</span>
-                              {complaint.assignee && <span>Assigned: {complaint.assignee.name}</span>}
-                              <span>{formatDistanceToNow(new Date(complaint.created_at), { addSuffix: true })}</span>
+                            <div className="flex items-start justify-between gap-4">
+                              <div className="flex-1">
+                                <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">
+                                  {complaint.title}
+                                </h3>
+                                <p className="text-sm text-muted-foreground line-clamp-2 mt-2">
+                                  {complaint.description}
+                                </p>
+                                <div className="flex flex-wrap gap-4 text-sm text-muted-foreground mt-3">
+                                  <span>Student: {complaint.student?.name}</span>
+                                  <span>Department: {complaint.department?.name}</span>
+                                  {complaint.assignee && <span>Assigned: {complaint.assignee.name}</span>}
+                                  <span>{formatDistanceToNow(new Date(complaint.created_at), { addSuffix: true })}</span>
+                                </div>
+                              </div>
+                              <div className="arrow-button arrow-button-secondary opacity-0 group-hover:opacity-100 transition-opacity">
+                                <ArrowRight className="h-4 w-4" />
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -167,7 +174,7 @@ const StaffDashboard = () => {
                   ) : (
                     <div className="text-center py-16">
                       <CheckCircle2 className="h-16 w-16 mx-auto text-muted-foreground/50 mb-4" />
-                      <h3 className="text-xl font-semibold mb-2">All caught up!</h3>
+                      <h3 className="text-xl font-semibold text-foreground mb-2">All caught up!</h3>
                       <p className="text-muted-foreground">No open complaints at the moment</p>
                     </div>
                   )}
@@ -181,23 +188,30 @@ const StaffDashboard = () => {
                         to={`/staff/complaint/${complaint.id}`}
                         className="block group"
                       >
-                        <div className="p-6 rounded-2xl border border-border bg-card hover:bg-accent/5 hover:border-primary/20 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
+                        <div className="p-6 rounded-2xl border border-border bg-card hover:bg-muted/50 hover:border-primary/30 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
                           <div className="flex flex-col gap-4">
                             <div className="flex flex-wrap items-center gap-3">
-                              <span className="text-sm font-mono font-semibold text-primary bg-primary/10 px-3 py-1 rounded-lg">
+                              <span className="text-sm font-mono font-semibold text-primary bg-primary/10 px-3 py-1 rounded-full">
                                 {complaint.code}
                               </span>
                               <StatusBadge status={complaint.status} />
                               <PriorityBadge priority={complaint.priority} />
                             </div>
-                            <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">
-                              {complaint.title}
-                            </h3>
-                            <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-                              <span>Student: {complaint.student?.name}</span>
-                              <span>Department: {complaint.department?.name}</span>
-                              {complaint.assignee && <span>Resolved by: {complaint.assignee.name}</span>}
-                              <span>{formatDistanceToNow(new Date(complaint.resolved_at || complaint.updated_at), { addSuffix: true })}</span>
+                            <div className="flex items-start justify-between gap-4">
+                              <div className="flex-1">
+                                <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">
+                                  {complaint.title}
+                                </h3>
+                                <div className="flex flex-wrap gap-4 text-sm text-muted-foreground mt-3">
+                                  <span>Student: {complaint.student?.name}</span>
+                                  <span>Department: {complaint.department?.name}</span>
+                                  {complaint.assignee && <span>Resolved by: {complaint.assignee.name}</span>}
+                                  <span>{formatDistanceToNow(new Date(complaint.resolved_at || complaint.updated_at), { addSuffix: true })}</span>
+                                </div>
+                              </div>
+                              <div className="arrow-button arrow-button-secondary opacity-0 group-hover:opacity-100 transition-opacity">
+                                <ArrowRight className="h-4 w-4" />
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -206,7 +220,7 @@ const StaffDashboard = () => {
                   ) : (
                     <div className="text-center py-16">
                       <FileText className="h-16 w-16 mx-auto text-muted-foreground/50 mb-4" />
-                      <h3 className="text-xl font-semibold mb-2">No resolved complaints</h3>
+                      <h3 className="text-xl font-semibold text-foreground mb-2">No resolved complaints</h3>
                       <p className="text-muted-foreground">Resolved complaints will appear here</p>
                     </div>
                   )}
